@@ -36,6 +36,21 @@ cd /Users/shvj/Projects/dbt_demo/airline_fleet_analysis
 
 Expected result: `Completed successfully` with passing models/tests.
 
+## Bootstrap test data (DDL + DML)
+
+From project root (`airline_fleet_analysis`):
+
+```bash
+# Create required schemas/tables
+docker exec -i postgres-db psql -U postgres -d airline_demo < sql/ddl_fleet.sql
+
+# Load deterministic sample data for dbt testing
+docker exec -i postgres-db psql -U postgres -d airline_demo < sql/dml_fleet_sample.sql
+
+# Run dbt tests
+/Users/shvj/Projects/dbt_demo/.venv-dbt312/bin/dbt test
+```
+
 ## Project layout
 
 - `models/staging/`
@@ -48,6 +63,9 @@ Expected result: `Completed successfully` with passing models/tests.
 	- `schema.yml` (mart tests)
 - `tests/`
 	- custom singular tests for status history data quality
+- `sql/`
+	- `ddl_fleet.sql` (table/schema creation)
+	- `dml_fleet_sample.sql` (sample data load)
 
 ## Key data quality tests
 
