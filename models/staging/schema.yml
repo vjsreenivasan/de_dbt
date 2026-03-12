@@ -61,6 +61,16 @@ models:
 
   - name: stg_aircraft_status_history
     description: "Staging model for fleet aircraft status history"
+    data_tests:
+      - no_overlap:
+          arguments:
+            group_by_column: aircraft_id
+            start_column: status_start
+            end_column: status_end
+      - single_open_status:
+          arguments:
+            group_by_column: aircraft_id
+            end_column: status_end
     columns:
       - name: status_history_id
         description: "Primary key"

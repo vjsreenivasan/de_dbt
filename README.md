@@ -88,10 +88,42 @@ docker exec -i postgres-db psql -U postgres -d airline_demo < sql/dml_fleet_samp
 	- `status_start` is not in the future
 - `test_stg_aircraft_status_history_status_start_datetime_format.sql`
 	- validates timestamp rendering shape `YYYY-MM-DD HH24:MI:SS.MS ±HHMM`
-- `test_stg_aircraft_status_history_no_overlap.sql`
+- Generic macro test `no_overlap` (in `macros/tests/no_overlap.sql`)
 	- no overlapping status intervals for the same aircraft
-- `test_stg_aircraft_status_history_single_open_status.sql`
+- Generic macro test `single_open_status` (in `macros/tests/single_open_status.sql`)
 	- at most one open (`status_end is null`) status row per aircraft
+
+## Macro usage examples
+
+Generic tests are defined as macros under `macros/tests/` and used in `schema.yml` model-level `data_tests`.
+
+Example for `stg_aircraft_status_history` in `models/staging/schema.yml`:
+
+```yaml
+models:
+	- name: stg_aircraft_status_history
+		data_tests:
+			- no_overlap:
+					arguments:
+						group_by_column: aircraft_id
+						start_column: status_start
+						end_column: status_end
+			- single_open_status:
+					arguments:
+						group_by_column: aircraft_id
+						end_column: status_end
+```
+
+Macro files:
+
+- `macros/tests/no_overlap.sql`
+- `macros/tests/single_open_status.sql`
+
+Run only this model + attached tests:
+
+```bash
+/Users/shvj/Projects/dbt_demo/.venv-dbt312/bin/dbt test --select stg_aircraft_status_history+
+```
 
 ## Common commands
 
