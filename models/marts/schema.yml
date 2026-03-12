@@ -1,0 +1,15 @@
+version: 2
+
+models:
+  - name: mart_fleet_overview
+    description: "Fleet KPI mart aggregated by aircraft model"
+    columns:
+      - name: manufacturer
+        data_tests:
+          - not_null
+      - name: model_code
+        data_tests:
+          - not_null
+      - name: total_aircraft
+        data_tests:
+          - not_null

@@ -1,0 +1,91 @@
+
+version: 2
+
+sources:
+  - name: fleet
+    database: airline_demo
+    schema: fleet
+    tables:
+      - name: aircraft
+        description: "Fleet aircraft master table"
+
+      - name: aircraft_models
+        description: "Fleet aircraft model master table"
+
+      - name: aircraft_status_history
+        description: "Historical operational status of fleet aircraft"
+
+models:
+  - name: stg_aircraft_models
+    description: "Staging model for fleet aircraft models"
+    columns:
+      - name: model_id
+        description: "Primary key"
+        data_tests:
+          - unique
+          - not_null
+
+  - name: stg_aircraft
+    description: "Staging model for fleet aircraft"
+    columns:
+      - name: aircraft_id
+        description: "Primary key"
+        data_tests:
+          - unique
+          - not_null
+
+      - name: model_id
+        description: "Foreign key to stg_aircraft_models"
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_aircraft_models')
+                field: model_id
+
+      - name: current_status
+        description: "Current operational status"
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Active', 'Maintenance', 'Grounded', 'Retired']
+
+      - name: ownership_type
+        description: "Aircraft ownership type"
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Owned', 'Leased']
+
+  - name: stg_aircraft_status_history
+    description: "Staging model for fleet aircraft status history"
+    columns:
+      - name: status_history_id
+        description: "Primary key"
+        data_tests:
+          - unique
+          - not_null
+          
+      - name: aircraft_id
+        description: "Foreign key to stg_aircraft"
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_aircraft')
+                field: aircraft_id
+
+      - name: status
+        description: "Historical operational status"
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Active', 'Maintenance', 'Grounded', 'Retired']
+
+      - name: status_start
+        description: "Start date of the historical operational status"
+        data_tests:
+          - not_null
